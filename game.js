@@ -1,39 +1,66 @@
-const gameContainer = document.querySelector('.container');
-const userResult = document.querySelector('.result__user img');
+const gameContainer = document.querySelector(".container");
+const userResult = document.querySelector(".result__user img");
 const cpuResult = document.querySelector(".result__cpu img");
-const result = document.querySelector('.result__text');
+const result = document.querySelector(".result__text");
 const optionImages = document.querySelectorAll(".result__options-image");
 
+const figures = [
+  {
+    id: "rock",
+    name: "Rock",
+    index: 0,
+    beats: ["scissors"],
+    losesTo: ["paper"],
+  },
+  {
+    id: "paper",
+    name: "Paper",
+    index: 1,
+    beats: ["rock"],
+    losesTo: ["scissors"],
+  },
+  {
+    id: "scissors",
+    name: "Scissors",
+    index: 2,
+    beats: ["paper"],
+    losesTo: ["rock"],
+  },
+];
+
+const outComes = {
+  draw: "Match draw",
+  win: "User",
+  lose: "Cpu",
+};
+
 optionImages.forEach((image, index) => {
-    image.addEventListener('click', (e) => {
-        image.classList.add('active');
-    optionImages.forEach((imageTwo,indexTwo)=>{
-        index !== indexTwo && imageTwo.classList.remove("active");
+  image.addEventListener("click", (e) => {
+    // Set active class on clicked image
+    image.classList.add("active");
+
+    // Remove active class from other images
+    optionImages.forEach((imageTwo, indexTwo) => {
+      index !== indexTwo && imageTwo.classList.remove("active");
     });
-    let imgSrc = e.target.querySelector('img').src;
-        userResult.src = imgSrc;
-    
-        let randomNumber = Math.floor(Math.random() * 3);
-        console.log(randomNumber);
-        let cpuImages = ["img/rock.png", "img/paper.png", "img/scissors.png"];
-        cpuResult.src = cpuImages[randomNumber];
 
-        let cpuValue = ['R','P','S'][randomNumber];
-        let userValue = ["R", "P", "S"][index];
-        let outComes = {
-            RR: 'Draw',
-            RP: 'Cpu',
-            RS: 'User',
-            PP: 'Draw',
-            PS: 'Cpu',
-            PR:'User',
-            SS: 'Draw',
-            SR:'Cpu',
-            SP:'User'
-        };
-        let outComeValue = outComes[userValue + cpuValue];
-        result.textContent = userValue === cpuValue ? 'Match Draw' : `${outComeValue} Won!!!`;
-        console.log(outComeValue);
-    })
+    // Set user image
+    const imgSrc = e.target.querySelector("img").src;
+    userResult.src = imgSrc;
 
-})
+    // Set cpu image
+    const randomNumber = Math.floor(Math.random() * 3);
+    const cpuFigure = figures[randomNumber];
+    cpuResult.src = `img/${cpuFigure.id}.png`;
+
+    // Determine outcome
+    const userFigure = figures[index];
+    const userBeats = userFigure.beats.includes(cpuFigure.id);
+    const cpuBeats = cpuFigure.beats.includes(userFigure.id);
+    const outcome = userBeats ? "win" : cpuBeats ? "lose" : "draw";
+
+    // Display result
+    result.textContent =
+      outcome === "draw" ? outComes.draw : `${outComes[outcome]} won!`;
+  });
+});
